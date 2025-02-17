@@ -25,7 +25,7 @@ public class AppTest {
     @Test
     public void emptyList() {
 
-    	var results = resultsService.getResults(new LinkedList<Ballot>());
+    	var results = resultsService.getResults2(new LinkedList<Ballot>());
     	
     	Assertions.assertTrue(results.isEmpty());
     }
@@ -34,7 +34,7 @@ public class AppTest {
     @Test
     public void testOrder() {
     	
-    	var results = resultsService.getResults(List.of(
+    	var results = resultsService.getResults2(List.of(
 					new Ballot(new String [] {"Matt","Sam","Tupac"})
     			));
     	
@@ -42,21 +42,9 @@ public class AppTest {
     	
     }
     
-//    @Test
-//    public void tooManyEntries() {
-//    	
-//    	var results = resultsService.getResults(List.of(
-//					new Ballot(new String [] {"Tupac","Smalls","Biggie","Tupac","Biggie","Biggie","Biggie","Biggie","Biggie","Biggie","Biggie","Biggie"}),
-//					new Ballot(new String [] {"Matt","Sam","Tupac"})
-//    			));
-//    	
-//    	Assertions.assertIterableEquals(List.of("Tupac","Smalls","Biggie","Matt","Sam"), results);
-//    	
-//    }
-    
     @Test
     public void twoFirstPlaces() {
-    	var results = resultsService.getResults(List.of(
+    	var results = resultsService.getResults2(List.of(
     			new Ballot(new String[] {"Tupac","Smalls","Biggie"}),
     			new Ballot(new String[] {"Biggie","Tupac","Smalls"}),
     			new Ballot(new String[] {"Biggie","Tupac","Smalls"}),

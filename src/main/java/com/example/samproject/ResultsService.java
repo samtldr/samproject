@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ResultsService {
 
 	final int maxScore = 3;
-	List<String> getResults(List<Ballot> ballots) {
+
+	List<String> getResults2(List<Ballot> ballots) {
 		
 		HashMap<String, int[]> canditateScore = new HashMap<>();
 		
@@ -20,69 +22,35 @@ public class ResultsService {
 			for(int i = 0; i < votes.length; i++) {
 				
 				int score = maxScore - i;
-				
-				if(score > 0) {
-					
-					var newVal = canditateScore.getOrDefault(votes[i], new int[] {0,0});
-					
-					newVal[0] = newVal[0] + score;
-					newVal[1] = newVal[1] + (score == maxScore ? 1 : 0);
-					
-					canditateScore.put(votes[i], newVal);
-				}
+			
+				var newVal = canditateScore.getOrDefault(votes[i], new int[3]);
+				newVal[i]++;
+				canditateScore.put(votes[i], newVal);
 			}
 			
 		}
 		
-        List<String> sortedKeys = canditateScore.entrySet()
-        		.stream()
-        		.sorted(Comparator.<Map.Entry<String, int[]>>comparingInt(entry -> entry.getValue()[0])
-        				.thenComparing(entry -> entry.getValue()[1])
-        				.reversed())
-        		.map(Map.Entry::getKey)
-        		.collect(Collectors.toList());
-		
-		return sortedKeys;
-	}
-	
-	List<String> getResults2(List<Ballot> ballots) {
-		
-		HashMap<String, ScoreProfile> canditateScore = new HashMap<>();
-		
-		for(Ballot ballot: ballots ) {
-			
-			String [] votes = ballot.getVotes();
-			
-			for(int i = 0; i < votes.length; i++) {
+			Comparator<Map.Entry<String, int[]>> comparitor = (val1, val2) -> {
 				
-				int score = maxScore - i;
+				int sum1 = (val1.getValue()[0] * 3) + (val1.getValue()[1] * 2) + (val1.getValue()[2] * 1);
+				int sum2 = (val2.getValue()[0] * 3) + (val2.getValue()[1] * 2) + (val2.getValue()[2] * 1);
 				
-				if(score > 0) {
+				return Integer.compare(sum1, sum2);
+			};
+	
+			List<String> sortedKeys = canditateScore.entrySet().stream()
+								.sorted(
+										comparitor
+										.thenComparing(entry -> entry.getValue()[0])
+										.thenComparing(entry -> entry.getValue()[1])
+										.thenComparing(entry -> entry.getValue()[2]).reversed()
+										)
+								.map(Map.Entry::getKey)
+								.collect(Collectors.toList());
 					
-					var newVal = canditateScore.getOrDefault(votes[i], new ScoreProfile());
-					newVal.addScore(score);
-					if(score == maxScore) newVal.addFirstPlaceCount();
-					if(score == 2) newVal.addSecondPlaceCount();
-					if(score == 1) newVal.addSecondPlaceCount();
 					
-					canditateScore.put(votes[i], newVal);
-				}
-			}
-			
-		}
-		
-        List<String> sortedKeys = canditateScore.entrySet()
-        		.stream()
-        		.sorted(Comparator.<Map.Entry<String, ScoreProfile>>comparingInt(entry -> entry.getValue().getScore())
-        				.thenComparing(entry -> entry.getValue().getFirstPlaceCount())
-        				.thenComparing(entry -> entry.getValue().getSecondPlaceCount())
-        				.thenComparing(entry -> entry.getValue().getThirdPlaceCount())
-        				.reversed())
-        		.map(Map.Entry::getKey)
-        		.collect(Collectors.toList());
-		
-		return sortedKeys;
+			return sortedKeys;
+
 	}
-	
-	
+
 }
